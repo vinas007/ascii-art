@@ -1,30 +1,30 @@
-package main
+package main 
 
-import (
-	"fmt"
-	"os"
+import(
+	"errors"
 	"strings"
+	"os"
 )
-func getBannerFile(args []string) string {
-	if len(args) == 3 {
-		switch args[2] {
-		case "standard", "shadow", "thinkertoy":
-			return  args[2] + ".txt"
-		default: fmt.Println("Invalid banner name")
-		return ""
-		}
-	}
-	return "standard.txt"
-}
 
-func loadBanner(file string) []string {
-	data, err := os.ReadFile(file)
+func loadBanner(banner string) (map[rune][]string, error) {
+	file, err := os.ReadFile(banner)
 	if err != nil {
-		fmt.Println("Error reading file:", err)
-		os.Exit(1)
+		return nil, errors.New("invalid banner file")
 	}
 
-	content := strings.ReplaceAll(string(data), "\r", "")
+	if len(file) == 0 {
+		return nil, errors.New("empty banner file")
+	}
 
-	return strings.Split(content, "\n")
+	lines := strings.Split(strings.ReplaceAll(string(file), "\r\n", "\n"), "\n")
+	if len(lines) != 856 {
+		return nil, errors.New("incomplete banner file")
+	}
+
+	star := make(map[rune][]string)
+	for i := rune(' '); i <= '~'; i++ {
+		start := (i-' ') * 9 + 1
+		star[i] = lines[start : start + 8]
+	} 
+	return star, nil
 }

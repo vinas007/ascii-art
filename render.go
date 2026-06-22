@@ -1,24 +1,22 @@
 package main
 
-import (
-	"fmt"
-)
+import "strings"
 
-func renderLine(line string, banner []string) {
-
-	if line == "" {
-		fmt.Println()
-		return
-	}
-	for row := 1; row <= 8; row++ {
-		for _, char := range line {
-			if char < 32 || char > 126 {
-				continue
+func render(input string, banner map[rune][]string) string {
+	var out strings.Builder
+	words := strings.Split(input, "\\n")
+	for i, word := range words {
+		if word == "" {
+			if i < len(word) -1 {
+				out.WriteByte('\n')
 			}
-			index := (int(char) - 32) * 9
-			fmt.Print(banner[index+row])
 		}
-		fmt.Println()
+		for row := 0; row < 8; row++ {
+			for _, char := range word {
+				out.WriteString(banner [char][row])
+			}
+			out.WriteByte('\n')
+		}
 	}
-
+	return out.String()
 }

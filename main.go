@@ -1,29 +1,29 @@
 package main
 
-import (
-	"os"
+import(
 	"strings"
+	"fmt"
+	"os"
 )
 
 func main() {
 	if len(os.Args) < 2 || len(os.Args) > 3 {
+		fmt.Println("Usage: go run . input [banner]")
 		return
 	}
 
-	input := os.Args[1]
-
-	input = strings.ReplaceAll(input, "\\n", "\n")
-
-	bannerFile := getBannerFile(os.Args)
-	if bannerFile == "" {
+	bannerFile := "standard.txt"
+	if len(os.Args) == 3 {
+		arg := os.Args[2]
+		if !strings.HasSuffix(arg, ".txt" ) {
+			arg = arg + ".txt"
+		}
+		bannerFile = arg
+	}
+	banner, err := loadBanner(bannerFile)
+	if err != nil {
+		fmt.Println(err)
 		return
 	}
-
-	banner := loadBanner(bannerFile)
-
-	lines := strings.Split(input, "\n")
-
-	for _, line := range lines {
-		renderLine(line, banner)
-	}
+	fmt.Print(render(os.Args[1], banner))
 }
